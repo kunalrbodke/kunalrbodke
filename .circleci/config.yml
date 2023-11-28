@@ -1,0 +1,15 @@
+version: 2.0
+
+jobs:
+  build:
+    docker:
+    - image: cimg/go:1.21.4
+    steps:
+    - checkout
+    - run: go run hello.go
+
+workflows:
+  build_now:
+    jobs:
+    - build
+  
