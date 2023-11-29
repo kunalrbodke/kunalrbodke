@@ -11,5 +11,4 @@ jobs:
 workflows:
   build_now:
     jobs:
-    - build
-  
+    - build 
