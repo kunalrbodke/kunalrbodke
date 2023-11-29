@@ -14,13 +14,13 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run
-          name: install dependencies
-            command: |
+      - run:
+        - name: install dependencies
+        - command: |
               apk --no-cache add git
-      - run
-          name: build image and push
-          command: ./build.sh
+      - run:
+        - name: build image and push
+        - command: ./build.sh
 
 workflows:
   version: 2
