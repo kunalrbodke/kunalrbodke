@@ -12,17 +12,17 @@ jobs:
     steps:
       - checkout
       - run: go run hello.go
-aws-build-and-push-image:
-    steps:
+
+    aws-build-and-push-image:
       - aws-ecr/build-and-push-image:
-          account_id: ${AWS_ACCOUNT_ID}
-          auth:
-            - aws-cli/setup:
-                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
-          context: aws_dev
-          repo: testing-cicd
-          tag: latest
-          
+        account_id: ${AWS_ACCOUNT_ID}
+        auth:
+          - aws-cli/setup:
+              role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
+        context: aws_dev
+        repo: testing-cicd
+        tag: latest
+
 workflows:
   version: 2
   build-and-push-image:
