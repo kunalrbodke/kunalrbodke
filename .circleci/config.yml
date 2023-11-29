@@ -1,4 +1,4 @@
-version: 2.1
+version: '2.1'
 
 orbs:
   aws-ecr: circleci/aws-ecr@9.0.1
@@ -6,24 +6,25 @@ orbs:
 jobs:
   build:
     docker:
-    - image: cimg/go:1.21.4
+      - image: cimg/go:1.21.4
     steps:
-    - checkout
-    - run: go run hello.go
+      - checkout
+      - run: go run hello.go
 
 workflows:
   build_and_push_image:
     jobs:
-    - aws-ecr/build_and_push_image:
-        name: Build and Push Docker image
-        account_url: ${AWS_ECR_ACCOUNT_URL}
-        aws_access_key_id: ${AWS_ACCESS_KEY_ID}
-        aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
-        region: ${AWS_REGION}
-        context: aws_dev
-        create_repo: false
-        #no_output_timeout: 20m
-        profile_name: default
-        repo: testing-cicd
-        skip_when_tags_exist: false
-        tag: latest,myECRRepoTag
+      - aws-ecr/build_and_push_image:
+          auth:
+            name: Build and Push Docker image
+            account_url: ${AWS_ECR_ACCOUNT_URL}
+            aws_access_key_id: ${AWS_ACCESS_KEY_ID}
+            aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+            region: ${AWS_REGION}
+            context: aws_dev
+            create_repo: false
+            # no_output_timeout: 20m
+            profile_name: default
+            repo: testing-cicd
+            skip_when_tags_exist: false
+            tag: latest,myECRRepoTag
