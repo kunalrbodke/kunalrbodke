@@ -4,22 +4,27 @@ orbs:
   aws-ecr: circleci/aws-ecr@9.0.1
 
 jobs:
-  aws_ecr:
+  build:
     docker:
-      - image: cimg/go:1.21.4
+      - image: cimg/go
     steps:
       - checkout
+
+      - aws-ecr/auth:
+          region: AWS_REGION
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          account-url: AWS_ECR_ACCOUNT_URL
+
       - run: go run hello.go
 
-
-      - aws-ecr/build_and_push_image:
+      - aws-ecr/build-and-push-image:
           repo: testing-cicd
-          tag: latest,myECRRepoTag
-
+          tag: latest    
 
 workflows:
-  build_and_push_to_ecr:
+  build-and-deploy:
     jobs:
-      - aws_ecr:
-          context: 
+      - build-and-pudh-image:
+          context:
             aws_dev
