@@ -14,13 +14,17 @@ jobs:
       - run: go run hello.go
 
       - aws-ecr/build-and-push-image:
+          account_id: ${AWS_ACCOUNT_ID}
+          auth:
+            - aws-cli/setup:
+                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
+          context: CircleCI_OIDC_Token
           repo: testing-cicd
           tag: latest
-          context:
-            aws_dev
+          
 
 workflows:
   version: 2
-  build:
+  build_now:
     jobs:
       - build
