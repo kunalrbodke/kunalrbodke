@@ -4,7 +4,7 @@ orbs:
   aws-ecr: circleci/aws-ecr@9.0.1
 
 jobs:
-  build_and_push_image:
+  aws_ecr:
     docker:
       - image: cimg/go:1.21.4
     steps:
@@ -13,23 +13,13 @@ jobs:
 
 
       - aws-ecr/build_and_push_image:
-          auth:
-          name: Build and Push Docker image
-          account_url: "${AWS_ECR_ACCOUNT_URL}"
-          aws_access_key_id: "${AWS_ACCESS_KEY_ID}"
-          aws_secret_access_key: "${AWS_SECRET_ACCESS_KEY}"
-          region: "${AWS_REGION}"
-          context: aws_dev
-          create_repo: false
-          # no_output_timeout: 20m
-          profile_name: default
           repo: testing-cicd
-          skip_when_tags_exist: false
           tag: latest,myECRRepoTag
 
 
 workflows:
-  build_and_push_image:
+  build_and_push_to_ecr:
     jobs:
-      - build_and_push_image:
-          context: aws-ecr
+      - aws_ecr:
+          context: 
+            aws_dev
