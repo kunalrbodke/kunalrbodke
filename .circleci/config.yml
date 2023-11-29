@@ -2,7 +2,6 @@
 version: 2.1
 
 orbs:
-  aws-cli: circleci/aws-cli@4.0
   aws-ecr: circleci/aws-ecr@9.0.1
 
 jobs:
@@ -13,18 +12,23 @@ jobs:
       - checkout
       - run: go run hello.go
 
-      - aws-ecr/build-and-push-image:
-          account_id: ${AWS_ACCOUNT_ID}
-          auth:
-            - aws-cli/setup:
-                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
-          context: aws_dev
-          repo: testing-cicd
-          tag: latest
+deploy:
+  docker:
+    - image: circleci/aws-cli@4.1.2
+  environments:
+    AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+    AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+    AWS_DEFAULT_REGION: ap-south-1  
 
-workflows:
-  version: 2
-  build-and-push-image:
-    jobs:
-      - build
-      - aws-build-and-push-image
+  steps:
+    -  attach_workspace:
+        at: .
+
+    - aws-ecr/build-and-push-image:
+        account_id: ${AWS_ACCOUNT_ID}
+        auth:
+          - aws-cli/setup:
+              role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
+        context: aws_dev
+        repo: testing-cicd
+        tag: latest
