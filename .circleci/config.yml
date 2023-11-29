@@ -23,7 +23,7 @@ jobs:
           tag: latest    
 
 workflows:
-  build-and-deploy:
+  build-and-push-image:
     jobs:
       - build-and-pudh-image:
           context:
