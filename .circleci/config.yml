@@ -31,5 +31,5 @@ jobs:
 workflows:
   build_and_push_image:
     jobs:
-      - build_and_push:
+      - build_and_push_image:
           context: aws-ecr
