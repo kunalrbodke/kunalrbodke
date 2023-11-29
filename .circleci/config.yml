@@ -1,42 +1,32 @@
 ---
-version: 2.1
-
-orbs:
-  aws-ecr: circleci/aws-ecr@9.0.1
+version: 2.0
 
 jobs:
-  build:
+  test:
     docker:
       - image: cimg/go:1.21.4
     steps:
       - checkout
       - run: go run hello.go
-
   deploy:
     docker:
-      - image: circleci/aws-cli@4.1.2
-    environment:
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-      AWS_DEFAULT_REGION: ap-south-1  
-
+      - image: alpine:latest
     steps:
-      -  attach_workspace:
-          at: .
-
-      - aws-ecr/build-and-push-image:
-          account_id: ${AWS_ACCOUNT_ID}
-          auth:
-            - aws-cli/setup:
-                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
-          context: aws_dev
-          repo: testing-cicd
-          tag: latest
+      - checkout
+      - setup_remote_docker
+      - run
+          name: install dependencies
+            command: |
+              apk --no-cache add git
+      - run
+          name: build image and push
+          command: ./build.sh
 
 workflows:
+  version: 2
   build_and_deploy:
     jobs:
-      - build
+      - test
       - deploy:
           requires:
-            - build
+            - test
