@@ -25,6 +25,6 @@ jobs:
 workflows:
   build-and-push-image:
     jobs:
-      - build-and-pudh-image:
+      - build-and-push-image:
           context:
             aws_dev
