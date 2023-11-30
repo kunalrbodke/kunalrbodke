@@ -18,7 +18,7 @@ jobs:
       - aws-ecr/build-and-push-image:
           repo: "testing-cicd"
           tag: "${CIRCLE_SHA1}"
-          registry-id: "${AWS_ECR_ACCOUNT_URL}"
+          registry_id: "${AWS_ECR_ACCOUNT_URL}"
           dockerfile: "Dockerfile"
           path: "./side-app"
 
