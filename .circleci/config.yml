@@ -1,23 +1,49 @@
 ---
-version: 2.0
+version: 2.1
 orbs:
-    aws-ecr: circleci/aws-ecr@9.0
-jobs:
-  test:
-    docker:
-      - image: cimg/go:1.21.4
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run:
-          name: install dependencies
-          command: |
-              apk --no-cache add git
-      - run: go run hello.go
-      - aws-ecr/build-and-push-image:
+  aws-cli: circleci/aws-cli@4.0
+  aws-ecr: circleci/aws-ecr@9.0
+workflows:
+  build_and_push_image:
+    jobs:
+      - aws-ecr/build_and_push_image:
+          account_id: ${AWS_ACCOUNT_ID}
+          auth:
+            - aws-cli/setup:
+                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
+          context: .
+          dockerfile: Dockerfile
+          executors: base
+          extra_build_args: '--compress'
+          no_output_timeout: 20m
+          path: ./Dockerfile
+          platform: linux/amd64
+          profile_name: default
+          push_image: true
+          region: ${AWS_DEFAULT_REGION}
           repo: testing-cicd
           tag: $CIRCLE_SHA1
-          context: aws_dev
+
+
+# version: 2.0
+# orbs:
+#     aws-ecr: circleci/aws-ecr@9.0
+# jobs:
+#   test:
+#     docker:
+#       - image: cimg/go:1.21.4
+#     steps:
+#       - checkout
+#       - setup_remote_docker
+#       - run:
+#           name: install dependencies
+#           command: |
+#               apk --no-cache add git
+#       - run: go run hello.go
+#   aws-ecr/build-and-push-image:
+#       repo: testing-cicd
+#       tag: $CIRCLE_SHA1
+#       context: aws_dev
   # deploy:
   #   docker:
   #     - image: circleci/aws-cli@4.1.2
@@ -25,13 +51,13 @@ jobs:
   #     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
   #     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
   #     AWS_DEFAULT_REGION: ap-south-1
-workflows:
-  build_and_deploy:
-    jobs:
-      - test
-      - aws-ecr/build-and-push-image:
-          repo: testing-cicd
-          tag: $CIRCLE_SHA1
-          context: aws_dev
-          requires:
-            - test
+# workflows:
+#   build_and_deploy:
+#     jobs:
+#       - test
+#       - aws-ecr/build-and-push-image:
+#           repo: testing-cicd
+#           tag: $CIRCLE_SHA1
+#           context: aws_dev
+#           requires:
+#             - test
