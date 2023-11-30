@@ -21,6 +21,8 @@ jobs:
           tag: "${CIRCLE_SHA1}"
           dockerfile: "Dockerfile"
           path: .
+          build-path: .
+
 
 workflows:
   build-and-deploy:
