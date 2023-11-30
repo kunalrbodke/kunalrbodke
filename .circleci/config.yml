@@ -10,7 +10,11 @@ jobs:
       - run: go run hello.go
   deploy:
     docker:
-      - image: alpine:latest
+      - image: circleci/aws-cli@4.1.2
+    environment:
+      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+      AWS_DEFAULT_REGION: ap-south-1
     steps:
       - checkout
       - setup_remote_docker
@@ -18,13 +22,12 @@ jobs:
           name: install dependencies
           command: |
               apk --no-cache add git
-      - run:
-          name: set execute permission for build.sh
-          command: |
-            chmod +x ./build.sh
-      - run:
-          name: build image and push
-          command: ./build.sh
+      - aws-ecr/build-and-push-image:
+          account-url: $AWS_ECR_ACCOUNT_URL
+          region: $AWS_REGION
+          repo: testing-cicd
+          tag: $CIRCLE_SHA1
+          context: aws_dev
 
 workflows:
   version: 2
