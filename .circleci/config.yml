@@ -16,7 +16,6 @@ jobs:
           go version
       - run: go run hello.go
       - aws-ecr/build-and-push-image:
-          account_id: "${AWS_ACCOUNT_ID}"
           repo: "testing-cicd"
           tag: "${CIRCLE_SHA1}"
           dockerfile: "Dockerfile"
