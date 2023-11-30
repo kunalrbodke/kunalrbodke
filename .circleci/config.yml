@@ -2,7 +2,7 @@
 version: 2.1
 
 orbs:
-  aws-ecr: circleci/aws-ecr@8.2.1
+  aws-ecr: circleci/aws-ecr@9.0
 
 jobs:
   aws-build-and-push:
@@ -16,6 +16,7 @@ jobs:
           go version
       - run: go run hello.go
       - aws-ecr/build-and-push-image:
+          account_id: "${AWS_ACCOUNT_ID}"
           repo: "testing-cicd"
           tag: "${CIRCLE_SHA1}"
           dockerfile: "Dockerfile"
