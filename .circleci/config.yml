@@ -1,28 +1,52 @@
 ---
 version: 2.1
+
 orbs:
-  aws-cli: circleci/aws-cli@4.0
-  aws-ecr: circleci/aws-ecr@9.0
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+jobs:
+  aws-build-and-push:
+    docker:
+      - image: cimg/go:1.21.4
+    steps:
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run: |
+          go version
+      - run: go run hello.go
+      - aws-ecr/build-and-push-image:
+          repo: "testing-cicd"
+          tag: "${CIRCLE_SHA1}"
+          dockerfile: "Dockerfile"
+          path: "./side-app"
+
 workflows:
-  build_and_push_image:
+  build-and-deploy:
     jobs:
-      - aws-ecr/build_and_push_image:
-          account_id: ${AWS_ACCOUNT_ID}
-          auth:
-            - aws-cli/setup:
-                role_arn: arn:aws:iam::240481310194:role/Role-for-circleCi
-          context: .
-          dockerfile: Dockerfile
-          executors: base
-          extra_build_args: '--compress'
-          no_output_timeout: 20m
-          path: ./Dockerfile
-          platform: linux/amd64
-          profile_name: default
-          push_image: true
-          region: ${AWS_DEFAULT_REGION}
-          repo: testing-cicd
-          tag: $CIRCLE_SHA1
+    - aws-build-and-push:
+        context:
+          - aws_dev
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # version: 2.0
