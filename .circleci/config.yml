@@ -1,20 +1,11 @@
 ---
 version: 2.0
-
+orbs:
+    aws-ecr: circleci/aws-ecr@9.0
 jobs:
   test:
     docker:
       - image: cimg/go:1.21.4
-    steps:
-      - checkout
-      - run: go run hello.go
-  deploy:
-    docker:
-      - image: circleci/aws-cli@4.1.2
-    environment:
-      AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
-      AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
-      AWS_DEFAULT_REGION: ap-south-1
     steps:
       - checkout
       - setup_remote_docker
@@ -22,18 +13,19 @@ jobs:
           name: install dependencies
           command: |
               apk --no-cache add git
-      - aws-ecr/build-and-push-image:
-          account-url: $AWS_ECR_ACCOUNT_URL
-          region: $AWS_REGION
-          repo: testing-cicd
-          tag: $CIRCLE_SHA1
-          context: aws_dev
-
+      - run: go run hello.go
+  # deploy:
+  #   docker:
+  #     - image: circleci/aws-cli@4.1.2
+  #   environment:
+  #     AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+  #     AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+  #     AWS_DEFAULT_REGION: ap-south-1
 workflows:
-  version: 2
   build_and_deploy:
     jobs:
       - test
-      - deploy:
-          requires:
-            - test
+      - aws-ecr/build-and-push-image:
+          repo: testing-cicd
+          tag: $CIRCLE_SHA1
+          context: aws_dev
