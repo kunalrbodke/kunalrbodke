@@ -20,7 +20,7 @@ jobs:
           repo: "testing-cicd"
           tag: "${CIRCLE_SHA1}"
           dockerfile: "Dockerfile"
-          path: "./side-app"
+          path: .
 
 workflows:
   build-and-deploy:
